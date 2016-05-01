@@ -12,6 +12,8 @@ namespace WebMerge.Tests
 {
     public class TestingEnabledHttpMessageHandler : HttpMessageHandler
     {
+        public event Action<HttpRequestMessage> RequestSent;
+
         private Dictionary<Uri, HttpResponseMessage> ResponseMap { get; } = new Dictionary<Uri, HttpResponseMessage>(); 
 
         public void AddResponse(Uri route, HttpResponseMessage response) => ResponseMap.Add(route, response);
@@ -22,6 +24,12 @@ namespace WebMerge.Tests
             ResponseMap.Add(route, new HttpResponseMessage(HttpStatusCode.OK) {Content = content});
         }
 
+        public void AddResponse(Uri route, string rawJsonContent)
+        {
+            var content = new StringContent(rawJsonContent, Encoding.UTF8, "application/json");
+            ResponseMap.Add(route, new HttpResponseMessage(HttpStatusCode.OK) { Content = content });
+        }
+
         public void AddByteArrayResponse(Uri route, byte[] data)
         {
             var content = new ByteArrayContent(data);
@@ -30,6 +38,8 @@ namespace WebMerge.Tests
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            RequestSent?.Invoke(request);
+            
             if (ResponseMap.ContainsKey(request.RequestUri))
             {
                 return Task.FromResult(ResponseMap[request.RequestUri]);

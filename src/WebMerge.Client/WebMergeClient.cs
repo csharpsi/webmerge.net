@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using WebMerge.Client.Enums;
+using WebMerge.Client.Factory;
 using WebMerge.Client.ResponseModels;
 
 namespace WebMerge.Client
@@ -13,18 +15,21 @@ namespace WebMerge.Client
     {
         private readonly HttpClient httpClient;
         private readonly IApiConfigurator configurator;
+        private readonly IDocumentCreatorFactory documentCreatorFactory;
 
         public WebMergeClient()
         {
             httpClient = new HttpClient();
             configurator = new WebMergeConfiguration();
+            documentCreatorFactory = new DocumentCreatorFactory(httpClient);
             Build();
         }
 
-        public WebMergeClient(HttpMessageHandler messageHandler, IApiConfigurator configurator)
+        public WebMergeClient(HttpClient httpClient, IApiConfigurator configurator, IDocumentCreatorFactory documentCreatorFactory)
         {
-            httpClient = new HttpClient(messageHandler);
+            this.httpClient = httpClient;
             this.configurator = configurator;
+            this.documentCreatorFactory = documentCreatorFactory;
             Build();
         }
 
@@ -74,6 +79,7 @@ namespace WebMerge.Client
 
             var response = await httpClient.PostAsJsonAsync(endpoint, mergeDictionary);
 
+            // todo - not sure what the best thing to do here is when status code != 200
             response.EnsureSuccessStatusCode();
 
             if (download)
@@ -89,6 +95,11 @@ namespace WebMerge.Client
             }
 
             return null;
+        }
+
+        public IDocumentCreator CreateDocument(string name, DocumentOutputType output = DocumentOutputType.Pdf, string outputName = null, string folder = null)
+        {
+            return documentCreatorFactory.Build(name, output, outputName, folder);
         }
     }
 }
