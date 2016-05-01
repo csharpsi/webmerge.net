@@ -51,7 +51,6 @@
   <ItemGroup>
     <Compile Include="IApiConfigurator.cs" />
     <Compile Include="IWebMergeClient.cs" />
-    <Compile Include="RequestOptions.cs" />
     <Compile Include="ResponseModels\DocumentMergeResponse.cs" />
     <Compile Include="WebMergeClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
