@@ -24,7 +24,7 @@ namespace WebMerge.Client.Factory
 
         public IDocumentCreator Build(string name, DocumentOutputType outputType, string outputName, string folder)
         {
-            var request = new DocumentCreateRequest
+            var request = new DocumentRequest
             {
                 Name = name,
                 Folder = folder,

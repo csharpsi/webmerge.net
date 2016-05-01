@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebMerge.Client.Enums;
 using WebMerge.Client.Factory;
+using WebMerge.Client.RequestModels;
 using WebMerge.Client.ResponseModels;
 
 namespace WebMerge.Client
@@ -97,9 +98,37 @@ namespace WebMerge.Client
             return null;
         }
 
-        public IDocumentCreator CreateDocument(string name, DocumentOutputType output = DocumentOutputType.Pdf, string outputName = null, string folder = null)
+        public async Task<Document> CreateDocumentAsync(DocumentRequest request)
         {
-            return documentCreatorFactory.Build(name, output, outputName, folder);
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Html) && request.DocumentType != DocumentType.Html)
+            {
+                throw new WebMergeException("Html content can only be used for document type of HTML");
+            }
+
+            if (request.DocumentType != DocumentType.Html && string.IsNullOrWhiteSpace(request.FileContents))
+            {
+                throw new WebMergeException($"Could not create a '{request.DocumentType.ToString("G")}' because there were no file contents.");
+            }
+
+            var response = await httpClient.PostAsJsonAsync("api/documents", request);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsAsync<Document>();
+        }
+
+        public Task<Document> UpdateDocumentAsync(int documentId, DocumentRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDocumentCreator UpdateDocument(int documentId, string name, DocumentOutputType output = DocumentOutputType.Pdf, string outputName = null, string folder = null)
+        {
+            throw new NotImplementedException();
         }
     }
 }

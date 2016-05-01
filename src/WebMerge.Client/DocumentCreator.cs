@@ -11,17 +11,17 @@ namespace WebMerge.Client
 {
     internal class DocumentCreator : IDocumentCreator
     {
-        private readonly DocumentCreateRequest request;
+        private readonly DocumentRequest request;
         private readonly HttpClient httpClient;
         private readonly IFileHelper fileHelper;
 
-        internal DocumentCreator(DocumentCreateRequest request, HttpClient httpClient)
+        internal DocumentCreator(DocumentRequest request, HttpClient httpClient)
             : this(request, httpClient, new FileHelper())
         {
             
         }
 
-        internal DocumentCreator(DocumentCreateRequest request, HttpClient httpClient, IFileHelper fileHelper)
+        internal DocumentCreator(DocumentRequest request, HttpClient httpClient, IFileHelper fileHelper)
         {
             this.request = request;
             this.httpClient = httpClient;

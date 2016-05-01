@@ -61,7 +61,7 @@
     <Compile Include="IApiConfigurator.cs" />
     <Compile Include="IDocumentCreator.cs" />
     <Compile Include="IWebMergeClient.cs" />
-    <Compile Include="RequestModels\DocumentCreateRequest.cs" />
+    <Compile Include="RequestModels\DocumentRequest.cs" />
     <Compile Include="ResponseModels\Document.cs" />
     <Compile Include="ResponseModels\DocumentField.cs" />
     <Compile Include="ResponseModels\DocumentMergeResponse.cs" />

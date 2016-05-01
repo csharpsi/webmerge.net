@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Moq;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using WebMerge.Client;
 using WebMerge.Client.Enums;
@@ -21,6 +17,23 @@ namespace WebMerge.Tests
     [TestFixture]
     public class WebMergeClientTests
     {
+        private const string DefaultResponseDocumentJson =
+            @"{
+                ""id"":""123"",
+                ""key"":""dockey"",
+                ""type"":""html"",
+                ""name"":""Test"",
+                ""output"":""pdf"",
+                ""size"":null,
+                ""size_width"":null,
+                ""size_height"":null,
+                ""active"": ""1"",
+                ""url"":""https://www.test.io"",
+                ""fields"": [ 
+                    {""key"": ""456"", ""name"": ""FieldName""}
+                ]
+            }";
+
         private IWebMergeClient client;
         private TestingEnabledHttpMessageHandler messageHandler;
         private Mock<IApiConfigurator> config;
@@ -131,30 +144,13 @@ namespace WebMerge.Tests
         }
 
         [Test]
-        public async Task CreateDocument()
+        public async Task CreateDocumentFromHtml()
         {
-            const string responseDocumentJson =
-            @"{
-                ""id"":""123"",
-                ""key"":""dockey"",
-                ""type"":""html"",
-                ""name"":""Test"",
-                ""output"":""pdf"",
-                ""size"":null,
-                ""size_width"":null,
-                ""size_height"":null,
-                ""active"": ""1"",
-                ""url"":""https://www.test.io"",
-                ""fields"": [ 
-                    {""key"": ""456"", ""name"": ""FieldName""}
-                ]
-            }";
-
-            messageHandler.AddResponse(new Uri("https://test.io/api/documents"), responseDocumentJson);
+            messageHandler.AddResponse(new Uri("https://test.io/api/documents"), DefaultResponseDocumentJson);
 
             messageHandler.RequestSent += req =>
             {
-                var body = req.Content.ReadAsAsync<DocumentCreateRequest>().Result;
+                var body = req.Content.ReadAsAsync<DocumentRequest>().Result;
                 Assert.NotNull(body);
 
                 Assert.That(body.DocumentType, Is.EqualTo(DocumentType.Html));
@@ -168,6 +164,61 @@ namespace WebMerge.Tests
             Assert.That(document.Name, Is.EqualTo("Test"));
         }
 
-        
+        [Test]
+        public async Task CreateDocumentFromFile()
+        {
+            messageHandler.AddResponse(new Uri("https://test.io/api/documents"), DefaultResponseDocumentJson);
+
+            var fileBytes = Encoding.UTF8.GetBytes("This is a file");
+            var expectedFileContents = Convert.ToBase64String(fileBytes);
+
+            messageHandler.RequestSent += req =>
+            {
+                var body = req.Content.ReadAsAsync<DocumentRequest>().Result;
+                Assert.NotNull(body);
+
+                Assert.That(body.DocumentType, Is.EqualTo(DocumentType.Docx));
+                Assert.That(body.Html, Is.Null);
+                Assert.That(body.FileContents, Is.EqualTo(expectedFileContents));
+            };
+
+            var document = await client.CreateDocument("Test").FromFile(fileBytes, DocumentType.Docx);
+
+            Assert.NotNull(document);
+            Assert.That(document.Name, Is.EqualTo("Test"));
+        }
+
+        [Test]
+        public async Task CreateDocumentFromFileOnDisk()
+        {
+            messageHandler.AddResponse(new Uri("https://test.io/api/documents"), DefaultResponseDocumentJson);
+
+            var fileBytes = Encoding.UTF8.GetBytes("This is a file");
+            const string path = "D:\\path\\to\\file.docx";
+
+            fileHelper.Setup(x => x.Exists(It.Is<string>(c => c.Equals(path)))).Returns(true);
+            fileHelper.Setup(x => x.ReadAllBytes(It.Is<string>(c => c.Equals(path)))).Returns(fileBytes);
+
+            var expectedFileContents = Convert.ToBase64String(fileBytes);
+
+            messageHandler.RequestSent += req =>
+            {
+                var body = req.Content.ReadAsAsync<DocumentRequest>().Result;
+                Assert.NotNull(body);
+
+                Assert.That(body.DocumentType, Is.EqualTo(DocumentType.Docx));
+                Assert.That(body.Html, Is.Null);
+                Assert.That(body.FileContents, Is.EqualTo(expectedFileContents));
+                Assert.That(body.Folder, Is.EqualTo("contracts"));
+                Assert.That(body.OutputType, Is.EqualTo(DocumentOutputType.Email));
+                Assert.That(body.OutputName, Is.EqualTo("From {$FirstName}"));
+                Assert.That(body.Name, Is.EqualTo("Test"));
+            };
+
+            var document = await client.CreateDocument("Test", DocumentOutputType.Email, "From {$FirstName}", "contracts").FromFile(fileBytes, DocumentType.Docx);
+
+            Assert.NotNull(document);
+            Assert.That(document.Name, Is.EqualTo("Test"));
+        }
     }
 }

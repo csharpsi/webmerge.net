@@ -4,7 +4,7 @@ using WebMerge.Client.Enums;
 
 namespace WebMerge.Client.RequestModels
 {
-    public class DocumentCreateRequest
+    public class DocumentRequest
     {
         [JsonProperty("name")]
         public string Name { get; set; }
