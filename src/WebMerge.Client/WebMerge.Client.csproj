@@ -49,24 +49,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\Base64ByteConverter.cs" />
     <Compile Include="Converters\BitBooleanConverter.cs" />
     <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Converters\WriteToStringConverter.cs" />
-    <Compile Include="DocumentCreator.cs" />
     <Compile Include="Enums\DocumentOutputType.cs" />
     <Compile Include="Enums\DocumentType.cs" />
     <Compile Include="Extensions\ExtensionHelpers.cs" />
-    <Compile Include="Factory\DocumentCreatorFactory.cs" />
-    <Compile Include="Factory\IDocumentCreatorFactory.cs" />
     <Compile Include="IApiConfigurator.cs" />
-    <Compile Include="IDocumentCreator.cs" />
     <Compile Include="IWebMergeClient.cs" />
     <Compile Include="RequestModels\DocumentRequest.cs" />
+    <Compile Include="RequestModels\DocumentUpdateRequest.cs" />
+    <Compile Include="RequestModels\FileDocumentRequest.cs" />
+    <Compile Include="RequestModels\HtmlDocumentRequest.cs" />
     <Compile Include="ResponseModels\Document.cs" />
     <Compile Include="ResponseModels\DocumentField.cs" />
-    <Compile Include="ResponseModels\DocumentMergeResponse.cs" />
+    <Compile Include="ResponseModels\DocumentFile.cs" />
+    <Compile Include="ResponseModels\RequestState.cs" />
     <Compile Include="Utils\FileSystem\FileHelper.cs" />
-    <Compile Include="Utils\FileSystem\IFileHelper.cs" />
     <Compile Include="WebMergeClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebMergeConfiguration.cs" />

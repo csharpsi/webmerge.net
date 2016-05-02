@@ -4,18 +4,18 @@ using WebMerge.Client.Enums;
 
 namespace WebMerge.Client.RequestModels
 {
-    public class DocumentRequest
+    public abstract class DocumentRequest
     {
-        [JsonProperty("name")]
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
-        [JsonProperty("type")]
+        [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(EnumConverter))]
-        public DocumentType DocumentType { get; set; }
+        public DocumentType? DocumentType { get; set; }
 
-        [JsonProperty("output")]
+        [JsonProperty("output", NullValueHandling = NullValueHandling.Ignore)]
         [JsonConverter(typeof(EnumConverter))]
-        public DocumentOutputType OutputType { get; set; }
+        public DocumentOutputType? OutputType { get; set; }
 
         [JsonProperty("output_name", NullValueHandling = NullValueHandling.Ignore)]
         public string OutputName { get; set; }
@@ -34,5 +34,15 @@ namespace WebMerge.Client.RequestModels
 
         [JsonProperty("file_contents", NullValueHandling = NullValueHandling.Ignore)]
         public string FileContents { get; set; }
+
+        protected DocumentRequest()
+        {
+            
+        }
+
+        protected DocumentRequest(string name)
+        {
+            Name = name;
+        }
     }
 }

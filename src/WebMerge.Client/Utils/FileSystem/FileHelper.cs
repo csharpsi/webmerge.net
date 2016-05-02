@@ -1,10 +1,14 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace WebMerge.Client.Utils.FileSystem
 {
-    public class FileHelper : IFileHelper
+    public class FileHelper
     {
-        public bool Exists(string path) => File.Exists(path);
-        public byte[] ReadAllBytes(string path) => File.ReadAllBytes(path);
+        public static Func<string, byte[]> FileReadFunc { get; set; } = File.ReadAllBytes;
+        public static Func<string, bool> ExistsFunc { get; set; } = File.Exists;
+
+        public static byte[] ReadAllBytes(string path) => FileReadFunc.Invoke(path);
+        public static bool Exists(string path) => ExistsFunc.Invoke(path);
     }
 }

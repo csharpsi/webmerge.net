@@ -30,10 +30,12 @@ namespace WebMerge.Client.ResponseModels
         public string Size { get; set; }
 
         [JsonProperty("size_width")]
-        public string Width { get; set; }
+        [JsonConverter(typeof(WriteToStringConverter))]
+        public double? SizeWidth { get; set; }
 
         [JsonProperty("size_height")]
-        public string Height { get; set; }
+        [JsonConverter(typeof(WriteToStringConverter))]
+        public double? SizeHeight { get; set; }
 
         [JsonProperty("active")]
         [JsonConverter(typeof(BitBooleanConverter))]
@@ -44,5 +46,8 @@ namespace WebMerge.Client.ResponseModels
 
         [JsonProperty("fields")]
         public List<DocumentField> Fields { get; set; }
+
+        [JsonProperty("html", NullValueHandling = NullValueHandling.Ignore)]
+        public string Html { get; set; }
     }
 }
