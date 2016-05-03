@@ -60,7 +60,13 @@ namespace WebMerge.Tests
             var content = JsonConvert.SerializeObject(new RequestState { Success = true });
             messageHandler.AddResponse(new Uri("https://test.io/merge/123/key"), content);
 
-            var result = await client.MergeDocumentAsync(123, "key", new Dictionary<string, object>(), false);
+            messageHandler.RequestSent += req =>
+            {
+                var body = req.Content.ReadAsStringAsync().Result;
+                Assert.That(body, Is.EqualTo(@"{""Foo"":""Bar""}"));
+            };
+
+            var result = await client.MergeDocumentAsync(123, "key", new {Foo = "Bar"}, false);
 
             Assert.That(result, Is.Null);
         }
@@ -71,7 +77,7 @@ namespace WebMerge.Tests
             var data = new byte[] {0x2, 0x4};
             messageHandler.AddResponse(new Uri("https://test.io/merge/123/key?download=1"), data);
 
-            var result = await client.MergeDocumentAsync(123, "key", new Dictionary<string, object>());
+            var result = await client.MergeDocumentAsync(123, "key", new {Foo = "Bar"});
 
             Assert.NotNull(result);
             Assert.That(result, Is.EquivalentTo(data));
@@ -83,7 +89,7 @@ namespace WebMerge.Tests
             var data = new byte[] { 0x2, 0x4 };
             messageHandler.AddResponse(new Uri("https://test.io/merge/123/key?download=1&test=1"), data);
 
-            var result = await client.MergeDocumentAsync(123, "key", new Dictionary<string, object>(), testMode: true);
+            var result = await client.MergeDocumentAsync(123, "key", new {Foo = "Bar"}, testMode: true);
 
             Assert.NotNull(result);
             Assert.That(result, Is.EquivalentTo(data));
@@ -139,7 +145,7 @@ namespace WebMerge.Tests
                 Assert.That(header.Parameter, Is.EqualTo(token));
             };
 
-            await client.MergeDocumentAsync(123, "key", new Dictionary<string, object>(), false);
+            await client.MergeDocumentAsync(123, "key", new {Foo = "Bar"}, false);
         }
 
         [Test]

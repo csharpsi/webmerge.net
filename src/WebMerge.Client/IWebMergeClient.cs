@@ -11,7 +11,7 @@ namespace WebMerge.Client
     {
         #region Documents
 
-        Task<byte[]> MergeDocumentAsync(int documentId, string documentKey, Dictionary<string, object> mergeDictionary, bool download = true, bool testMode = false);
+        Task<byte[]> MergeDocumentAsync(int documentId, string documentKey, object mergeObject, bool download = true, bool testMode = false);
         Task<Document> CreateDocumentAsync(DocumentRequest request);
         Task<Document> UpdateDocumentAsync(int documentId, DocumentUpdateRequest request);
         Task<List<Document>> GetDocumentListAsync(string search = null, string folder = null);

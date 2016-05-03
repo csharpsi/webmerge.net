@@ -55,7 +55,7 @@ namespace WebMerge.Client
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authToken);
         }
 
-        public async Task<byte[]> MergeDocumentAsync(int documentId, string documentKey, Dictionary<string, object> mergeDictionary, bool download = true, bool testMode = false)
+        public async Task<byte[]> MergeDocumentAsync(int documentId, string documentKey, object mergeObject, bool download = true, bool testMode = false)
         {
             var endpoint = $"merge/{documentId}/{documentKey}";
             
@@ -76,7 +76,7 @@ namespace WebMerge.Client
                 endpoint += $"?{string.Join("&", args)}";
             }
 
-            var response = await httpClient.PostAsJsonAsync(endpoint, mergeDictionary);
+            var response = await httpClient.PostAsJsonAsync(endpoint, mergeObject);
 
             // todo - not sure what the best thing to do here is when status code != 200
             response.EnsureSuccessStatusCode();
