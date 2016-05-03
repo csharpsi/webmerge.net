@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -54,7 +55,7 @@ namespace WebMerge.Client
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authToken);
         }
 
-        public async Task<byte[]> MergeDocumentAsync(int documentId, string documentKey, Dictionary<string, object> mergeDictionary, bool download = true, bool testMode = false)
+        public async Task<byte[]> MergeDocumentAsync(int documentId, string documentKey, object mergeObject, bool download = true, bool testMode = false)
         {
             var endpoint = $"merge/{documentId}/{documentKey}";
             
@@ -75,7 +76,7 @@ namespace WebMerge.Client
                 endpoint += $"?{string.Join("&", args)}";
             }
 
-            var response = await httpClient.PostAsJsonAsync(endpoint, mergeDictionary);
+            var response = await httpClient.PostAsJsonAsync(endpoint, mergeObject);
 
             // todo - not sure what the best thing to do here is when status code != 200
             response.EnsureSuccessStatusCode();
@@ -188,6 +189,61 @@ namespace WebMerge.Client
             var response = await httpClient.DeleteAsync($"api/documents/{documentId}");
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsAsync<RequestState>();
+        }
+
+        public async Task<Stream> MergeDataRouteWithSingleDownloadAsync(int documentId, string documentKey, object mergeObject, bool testMode = false)
+        {
+            var endpoint = $"route/{documentId}/{documentKey}?download=1";
+
+            if (testMode)
+            {
+                endpoint += "&test=1";
+            }
+
+            var response = await httpClient.PostAsJsonAsync(endpoint, mergeObject);
+            response.EnsureSuccessStatusCode();
+
+            try
+            {
+                await response.Content.ReadAsAsync<MultipleFileRouteRequestState>();
+            }
+            catch (UnsupportedMediaTypeException)
+            {
+                // download of single file was successful. It's a bit hacky - but only way to ensure the correct response
+                return await response.Content.ReadAsStreamAsync();
+            }
+
+            throw new WebMergeException($"Response indicated multiple files available for download. Try using {nameof(MergeDataRouteWithMultipleDownloadAsync)} instead");
+        }
+
+        public async Task<RequestState> MergeDataRouteAsync(int documentId, string documentKey, object mergeObject, bool testMode = false)
+        {
+            var endpoint = $"route/{documentId}/{documentKey}";
+
+            if (testMode)
+            {
+                endpoint += "?test=1";
+            }
+
+            var response = await httpClient.PostAsJsonAsync(endpoint, mergeObject);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsAsync<RequestState>();
+        }
+
+        public async Task<MultipleFileRouteRequestState> MergeDataRouteWithMultipleDownloadAsync(int documentId, string documentKey, object mergeObject, bool testMode = false)
+        {
+            var endpoint = $"route/{documentId}/{documentKey}?download=1";
+
+            if (testMode)
+            {
+                endpoint += "&test=1";
+            }
+
+            var response = await httpClient.PostAsJsonAsync(endpoint, mergeObject);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsAsync<MultipleFileRouteRequestState>();
         }
 
         private void CheckRequest(DocumentRequest request)

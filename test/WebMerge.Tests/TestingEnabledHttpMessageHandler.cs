@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace WebMerge.Tests
 {
@@ -18,21 +17,21 @@ namespace WebMerge.Tests
 
         public void AddResponse(Uri route, HttpResponseMessage response) => ResponseMap.Add(route, response);
 
-        public void AddResponse<T>(Uri route, T data)
-        {
-            var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
-            ResponseMap.Add(route, new HttpResponseMessage(HttpStatusCode.OK) {Content = content});
-        }
-
         public void AddResponse(Uri route, string rawJsonContent)
         {
             var content = new StringContent(rawJsonContent, Encoding.UTF8, "application/json");
             ResponseMap.Add(route, new HttpResponseMessage(HttpStatusCode.OK) { Content = content });
         }
 
-        public void AddByteArrayResponse(Uri route, byte[] data)
+        public void AddResponse(Uri route, byte[] data)
         {
             var content = new ByteArrayContent(data);
+            ResponseMap.Add(route, new HttpResponseMessage(HttpStatusCode.OK) {Content = content});
+        }
+
+        public void AddResponse(Uri route, Stream stream)
+        {
+            var content = new StreamContent(stream);
             ResponseMap.Add(route, new HttpResponseMessage(HttpStatusCode.OK) {Content = content});
         }
 
