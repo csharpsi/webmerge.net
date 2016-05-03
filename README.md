@@ -27,10 +27,14 @@ C# library for the WebMerge API
 
 ### Delete a document
 
+## Data Route
+
+### Merge a data route
+
+
 ## Not done yet
 
 #### Data Routes
-* Merge a data route
 * Get a data route
 * Get the fields for a data route
 * Delete a data route

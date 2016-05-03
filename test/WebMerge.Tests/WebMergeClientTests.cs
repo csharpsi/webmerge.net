@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Moq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using WebMerge.Client;
 using WebMerge.Client.Enums;
@@ -55,7 +57,7 @@ namespace WebMerge.Tests
         [Test]
         public async Task MergeDocumentAsyncWithoutDownload()
         {
-            var content = new RequestState {Success = true};
+            var content = JsonConvert.SerializeObject(new RequestState { Success = true });
             messageHandler.AddResponse(new Uri("https://test.io/merge/123/key"), content);
 
             var result = await client.MergeDocumentAsync(123, "key", new Dictionary<string, object>(), false);
@@ -67,7 +69,7 @@ namespace WebMerge.Tests
         public async Task MergeDocumentAsyncWithDownload()
         {
             var data = new byte[] {0x2, 0x4};
-            messageHandler.AddByteArrayResponse(new Uri("https://test.io/merge/123/key?download=1"), data);
+            messageHandler.AddResponse(new Uri("https://test.io/merge/123/key?download=1"), data);
 
             var result = await client.MergeDocumentAsync(123, "key", new Dictionary<string, object>());
 
@@ -79,7 +81,7 @@ namespace WebMerge.Tests
         public async Task MergeDocumentInTestMode()
         {
             var data = new byte[] { 0x2, 0x4 };
-            messageHandler.AddByteArrayResponse(new Uri("https://test.io/merge/123/key?download=1&test=1"), data);
+            messageHandler.AddResponse(new Uri("https://test.io/merge/123/key?download=1&test=1"), data);
 
             var result = await client.MergeDocumentAsync(123, "key", new Dictionary<string, object>(), testMode: true);
 
@@ -107,7 +109,7 @@ namespace WebMerge.Tests
                 requestEventFired = true;
             };
 
-            messageHandler.AddByteArrayResponse(new Uri("https://test.io/merge/123/key?download=1"), data);
+            messageHandler.AddResponse(new Uri("https://test.io/merge/123/key?download=1"), data);
 
             var requestBody = new Dictionary<string, object>
             {
@@ -124,7 +126,7 @@ namespace WebMerge.Tests
         [Test]
         public async Task AuthHeaderIsCorrect()
         {
-            var content = new RequestState { Success = true };
+            var content = JsonConvert.SerializeObject(new RequestState { Success = true });
             messageHandler.AddResponse(new Uri("https://test.io/merge/123/key"), content);
 
             messageHandler.RequestSent += req =>
@@ -434,6 +436,83 @@ namespace WebMerge.Tests
             var result = await client.DeleteDocument(42);
 
             Assert.That(result.Success, Is.True);
+        }
+
+        [Test]
+        public async Task MergeDataRouteWithSingleDownload()
+        {
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes("This is a file"));
+            
+            messageHandler.AddResponse(new Uri("https://test.io/route/42/foobar?download=1"), stream);
+
+            var result = await client.MergeDataRouteWithSingleDownloadAsync(42, "foobar", new {Testing = "ye"});
+
+            Assert.That(result, Is.Not.Null);
+
+            Assert.That(result, Is.EqualTo(stream));
+        }
+
+        [Test]
+        public void MergeDataRouteWithSingleDownloadButMultipleFilesProvided()
+        {
+            var obj = new MultipleFileRouteRequestState
+            {
+                Success = true,
+                Files = new List<DataRouteFile>
+                {
+                    new DataRouteFile
+                    {
+                        FileContents = new byte[] {0x2, 0x4},
+                        Name = "Not really a file"
+                    }
+                }
+            };
+
+            var content = JsonConvert.SerializeObject(obj);
+
+            messageHandler.AddResponse(new Uri("https://test.io/route/42/foobar?download=1"), content);
+
+            Assert.ThrowsAsync<WebMergeException>(() => client.MergeDataRouteWithSingleDownloadAsync(42, "foobar", new { Testing = "ye" }));
+        }
+
+        [Test]
+        public async Task MergeDataRoute()
+        {
+            const string exampleResponse = @"
+            {
+                ""success"" : ""1""
+            }";
+
+            messageHandler.AddResponse(new Uri("https://test.io/route/42/foo"), exampleResponse);
+
+            var result = await client.MergeDataRouteAsync(42, "foo", new {Foo = "Bar"});
+
+            Assert.That(result.Success, Is.True);
+        }
+
+        [Test]
+        public async Task MergeDataRouteWithMultipleDownload()
+        {
+            var file1 = Convert.ToBase64String(Encoding.UTF8.GetBytes("File1"));
+            var file2 = Convert.ToBase64String(Encoding.UTF8.GetBytes("File2"));
+
+            var exampleResponse = $@"
+            {{
+                ""success"":1,
+                ""files"": [
+                    {{""name"":""Invoice.pdf"", ""file_contents"": ""{file1}""}},
+                    {{""name"":""Thank You.pdf"", ""file_contents"": ""{file2}""}}
+                ]
+            }}";
+
+            messageHandler.AddResponse(new Uri("https://test.io/route/42/bar?download=1"), exampleResponse);
+
+            var result = await client.MergeDataRouteWithMultipleDownloadAsync(42, "bar", new {Foo = "Bar"});
+
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Files, Has.Count.EqualTo(2));
+            Assert.That(result.Files[0].FileContents, Is.EquivalentTo(Convert.FromBase64String(file1)));
+            Assert.That(result.Files[1].FileContents, Is.EquivalentTo(Convert.FromBase64String(file2)));
         }
     }
 }
