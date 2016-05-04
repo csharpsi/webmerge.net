@@ -50,13 +50,72 @@ using(var client = new WebMergeClient())
 }
 ```
 
+Alternativley, if you are using a dependency injection container, you could inject the `IWebMergeClient` interface into your constructor, making sure that the container properly disposes the object when it's done with it
+
+``` c#
+private readonly IWebMergeClient webMergeClient;
+
+public MyClass(IWebMergeClient webMergeClient) 
+{
+    this.webMergeClient = webMergeClient;
+}
+```
+
 ## Documents
 [API Docs](https://www.webmerge.me/developers/documents)
 
 ### Merge Document
 
-**MergeDocumentAndDownloadAsync**  
-Merge a document with `download=1` set
+```c#
+Task<Stream> MergeDocumentAndDownloadAsync(int documentId, string documentKey, object mergeObject, bool testMode = false);
+```
+*Merge the given document with the given object and download it (with download=1).*
+
+**Example**  
+Assuming the document template contains `{$FirstName}` and `{$LastName}` tokens
+
+``` c#
+public async Task<ActionResult> MergeAndDownload(int documentId, string documentKey)
+{
+    using(var client = new WebMergeClient())
+    {
+        var person = new {FirstName = "Jack", LastName = "Daniel" };
+        var documentStream = await client.MergeDocumentAndDownloadAsync(documentId, documentKey, person);
+        
+        return File(documentStream, "application/pdf", "My-Pdf-File.pdf");
+    }
+}
+```
+
+In order to avoid using all of your API allowance, you can optionally specify `testMode` as `true`. This will append the `test=1` query string parameter to the request and the document you download will be watermarked as a sample document.
+
+```c#
+Task<ActionResponse> MergeDocumentAsync(int documentId, string documentKey, object mergeObject, bool testMode = false);
+```
+*Merge a document without downloading (without download=1)*
+
+**Example**  
+Assuming the document template contains `{$FirstName}` and `{$LastName}` tokens
+
+```c#
+public async Task<ActionResult> Merge(int documentId, string documentKey)
+{
+    using(var client = new WebMergeClient())
+    {
+        var person = new {FirstName = "Jack", LastName = "Daniel" };
+        var result = await client.MergeDocumentAsync(documentId, documentKey, person);
+        
+        if(result.Success)
+        {
+            // rejoyce!
+        }
+        else
+        {
+            // weep
+        }
+    }
+}
+```
 
 
 ### Create Document (notifications not implemented)
