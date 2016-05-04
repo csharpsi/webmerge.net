@@ -9,7 +9,7 @@ namespace WebMerge.Client.Converters
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public override bool CanConvert(Type objectType) => objectType == typeof (byte[]);

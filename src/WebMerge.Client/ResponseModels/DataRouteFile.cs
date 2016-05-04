@@ -9,7 +9,7 @@ namespace WebMerge.Client.ResponseModels
         public string Name { get; set; }
 
         [JsonProperty("file_contents")]
-        [JsonConverter(typeof(Base64ByteConverter))]
+        [JsonConverter(typeof (Base64ByteConverter))]
         public byte[] FileContents { get; set; }
     }
 }

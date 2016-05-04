@@ -2,7 +2,7 @@
 
 namespace WebMerge.Client.ResponseModels
 {
-    public class DocumentField
+    public class Field
     {
         [JsonProperty("key")]
         public string Key { get; set; }
@@ -10,12 +10,11 @@ namespace WebMerge.Client.ResponseModels
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        public DocumentField()
+        public Field()
         {
-            
         }
 
-        public DocumentField(string key, string name)
+        public Field(string key, string name)
         {
             Key = key;
             Name = name;

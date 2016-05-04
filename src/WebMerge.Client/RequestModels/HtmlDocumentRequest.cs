@@ -7,7 +7,6 @@ namespace WebMerge.Client.RequestModels
         public HtmlDocumentRequest(string name, string html)
             : this(name, html, DocumentOutputType.Pdf)
         {
-            
         }
 
         public HtmlDocumentRequest(string name, string html, DocumentOutputType output)
