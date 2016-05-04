@@ -10,11 +10,11 @@ namespace WebMerge.Client.RequestModels
         public string Name { get; set; }
 
         [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(EnumConverter))]
+        [JsonConverter(typeof (EnumConverter))]
         public DocumentType? DocumentType { get; set; }
 
         [JsonProperty("output", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(EnumConverter))]
+        [JsonConverter(typeof (EnumConverter))]
         public DocumentOutputType? OutputType { get; set; }
 
         [JsonProperty("output_name", NullValueHandling = NullValueHandling.Ignore)]
@@ -37,7 +37,6 @@ namespace WebMerge.Client.RequestModels
 
         protected DocumentRequest()
         {
-            
         }
 
         protected DocumentRequest(string name)

@@ -13,7 +13,7 @@ namespace WebMerge.Client.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace WebMerge.Tests
         public void CanCorrectlyConvertJsonStringToDocument()
         {
             const string json =
-            @"{
+                @"{
                 ""id"":""123"",
                 ""key"":""dockey"",
                 ""type"":""pptx"",
@@ -57,9 +57,9 @@ namespace WebMerge.Tests
                 OutputType = DocumentOutputType.Email,
                 IsActive = true,
                 Url = "https://www.test.io",
-                Fields = new List<DocumentField>
+                Fields = new List<Field>
                 {
-                    new DocumentField("456", "FieldName")
+                    new Field("456", "FieldName")
                 }
             };
 

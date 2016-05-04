@@ -65,11 +65,11 @@
     <Compile Include="ResponseModels\DataRoute.cs" />
     <Compile Include="ResponseModels\DataRouteFile.cs" />
     <Compile Include="ResponseModels\Document.cs" />
-    <Compile Include="ResponseModels\DocumentField.cs" />
+    <Compile Include="ResponseModels\Field.cs" />
     <Compile Include="ResponseModels\DocumentFile.cs" />
     <Compile Include="ResponseModels\MultipleFileRouteRequestState.cs" />
-    <Compile Include="ResponseModels\RequestState.cs" />
-    <Compile Include="Utils\FileSystem\FileHelper.cs" />
+    <Compile Include="ResponseModels\ActionResponse.cs" />
+    <Compile Include="Utils\FileHelper.cs" />
     <Compile Include="WebMergeClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebMergeConfiguration.cs" />

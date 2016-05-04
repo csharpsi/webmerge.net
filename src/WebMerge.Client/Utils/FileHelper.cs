@@ -1,8 +1,12 @@
 ﻿using System;
 using System.IO;
 
-namespace WebMerge.Client.Utils.FileSystem
+namespace WebMerge.Client.Utils
 {
+    /*
+    Allows for tests to override the method used for File IO
+    */
+
     public class FileHelper
     {
         public static Func<string, byte[]> FileReadFunc { get; set; } = File.ReadAllBytes;
