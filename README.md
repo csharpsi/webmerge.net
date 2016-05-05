@@ -9,6 +9,14 @@ You will need to set up an account with [WebMerge](https://www.webmerge.me) and 
 
 For more information on the WebMerge API, read through their [documentation](https://www.webmerge.me/developers)
 
+## Installation 
+
+***Not yet available***
+
+```
+Install-Package WebMerge.Net
+```
+
 ## Authentication
 Authenticating with the WebMerge C# SDK is as simple as adding an `appSetting` to either your web.config or app.config file with the key 'WebMerge.ApiKey' and the value of your API Key and an *Environment Variable* with the key 'WebMerge.ApiSecret' and the value of your API Secret.
 
@@ -26,13 +34,15 @@ The webmerge.net library will take these values and create the correct Authoriza
 
 ## Usage
 
+.NET 4.5 or higher required. This documentation assumes knowledge of [Asynchronus Programming](https://msdn.microsoft.com/en-us/library/hh191443.aspx)
+
 You'll need to add the namespace
 
 ```c#
 using WebMerge.Client;
 ```
 
-Other namespaces you may need to add are:
+Other namespaces you may need:
 
 ```c#
 using WebMerge.Client.Enums;
@@ -66,59 +76,92 @@ public MyClass(IWebMergeClient webMergeClient)
 
 ### Merge Document
 
-```c#
-Task<Stream> MergeDocumentAndDownloadAsync(int documentId, string documentKey, object mergeObject, bool testMode = false);
-```
+#### MergeDocumentAndDownloadAsync `async Task<Stream>`
+
 *Merge the given document with the given object and download it (with download=1).*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|documentId|int|The identifier for the document template to merge data into|
+|documentKey|string|The document key|
+|mergeObject|object|The object that maps with the merge fields in the document template. e.g. a property named `FirstName` would map to a merge field `{$FirstName}`|
+|testMode|bool|Set to true to test the document merge without using your allowance (test=1)|
 
 **Example**  
 Assuming the document template contains `{$FirstName}` and `{$LastName}` tokens
 
 ``` c#
-public async Task<ActionResult> MergeAndDownload(int documentId, string documentKey)
+using(var client = new WebMergeClient())
 {
-    using(var client = new WebMergeClient())
-    {
-        var person = new {FirstName = "Jack", LastName = "Daniel" };
-        var documentStream = await client.MergeDocumentAndDownloadAsync(documentId, documentKey, person);
-        
-        return File(documentStream, "application/pdf", "My-Pdf-File.pdf");
-    }
+    var person = new {FirstName = "Jack", LastName = "Daniel" };
+    var documentStream = await client.MergeDocumentAndDownloadAsync(documentId, documentKey, person);
+    
+    // Write stream to disk, pipe to output etc
 }
 ```
 
-In order to avoid using all of your API allowance, you can optionally specify `testMode` as `true`. This will append the `test=1` query string parameter to the request and the document you download will be watermarked as a sample document.
+#### MergeDocumentAsync `async Task<ActionResponse>`
 
-```c#
-Task<ActionResponse> MergeDocumentAsync(int documentId, string documentKey, object mergeObject, bool testMode = false);
-```
 *Merge a document without downloading (without download=1)*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|documentId|int|The identifier for the document template to merge data into|
+|documentKey|string|The document key|
+|mergeObject|object|The object that maps with the merge fields in the document template. e.g. a property named `FirstName` would map to a merge field `{$FirstName}`|
+|testMode|bool|Set to true to test the document merge without using your allowance (test=1)|
 
 **Example**  
 Assuming the document template contains `{$FirstName}` and `{$LastName}` tokens
 
 ```c#
-public async Task<ActionResult> Merge(int documentId, string documentKey)
+using(var client = new WebMergeClient())
 {
-    using(var client = new WebMergeClient())
+    var person = new {FirstName = "Jack", LastName = "Daniel" };
+    var result = await client.MergeDocumentAsync(documentId, documentKey, person);
+    
+    if(result.Success)
     {
-        var person = new {FirstName = "Jack", LastName = "Daniel" };
-        var result = await client.MergeDocumentAsync(documentId, documentKey, person);
-        
-        if(result.Success)
-        {
-            // rejoyce!
-        }
-        else
-        {
-            // weep
-        }
+        // rejoyce!
+    }
+    else
+    {
+        // weep
     }
 }
 ```
 
+### Create Document  
+*(notifications not implemented)*
 
-### Create Document (notifications not implemented)
+#### CreateDocumentAsync `Task<Document>`
+
+*Create a new document template*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|request|DocumentRequest|An instance of either `HtmlDocumentRequest` or `FileDocumentRequest`|
+
+**HTML Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var request = new HtmlDocumentRequest("Proposal", "<h1>Dear {$FirstName},</h1>");
+    var document = await client.CreateDocumentAsync(request);
+}
+```
+
+**File Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var fileBytes = System.IO.File.ReadAllBytes("C:\\Documents\\ProposalTemplate.docx");
+    var request = new FileDocumentRequest("Proposal", fileBytes, DocumentType.Docx);
+    var document = await client.CreateDocumentAsync(request);
+}
+```
 
 ### Update document
 
