@@ -136,7 +136,7 @@ namespace WebMerge.Client
             return await response.Content.ReadAsAsync<DocumentFile>();
         }
 
-        public async Task<Document> CopyDocument(int documentId, string name)
+        public async Task<Document> CopyDocumentAsync(int documentId, string name)
         {
             if (name == null)
             {
@@ -149,7 +149,7 @@ namespace WebMerge.Client
             return await response.Content.ReadAsAsync<Document>();
         }
 
-        public async Task<ActionResponse> DeleteDocument(int documentId)
+        public async Task<ActionResponse> DeleteDocumentAsync(int documentId)
         {
             var response = await httpClient.DeleteAsync($"api/documents/{documentId}");
             response.EnsureSuccessStatusCode();
@@ -232,7 +232,7 @@ namespace WebMerge.Client
             return await response.Content.ReadAsAsync<List<Field>>();
         }
 
-        public async Task<ActionResponse> DeleteDataRoute(int dataRouteId)
+        public async Task<ActionResponse> DeleteDataRouteAsync(int dataRouteId)
         {
             var response = await httpClient.DeleteAsync($"api/routes/{dataRouteId}");
             response.EnsureSuccessStatusCode();

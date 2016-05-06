@@ -19,8 +19,8 @@ namespace WebMerge.Client
         Task<Document> GetDocumentAsync(int documentId);
         Task<List<Field>> GetDocumentFieldsAsync(int documentId);
         Task<DocumentFile> GetFileForDocumentAsync(int documentId);
-        Task<Document> CopyDocument(int documentId, string name);
-        Task<ActionResponse> DeleteDocument(int documentId);
+        Task<Document> CopyDocumentAsync(int documentId, string name);
+        Task<ActionResponse> DeleteDocumentAsync(int documentId);
 
         #endregion
 
@@ -33,7 +33,7 @@ namespace WebMerge.Client
         Task<List<DataRoute>> GetDataRouteListAsync();
         Task<DataRoute> GetDataRouteAsync(int dataRouteId);
         Task<List<Field>> GetDataRouteFieldsAsync(int dataRouteId);
-        Task<ActionResponse> DeleteDataRoute(int dataRouteId);
+        Task<ActionResponse> DeleteDataRouteAsync(int dataRouteId);
 
         #endregion
     }
