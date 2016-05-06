@@ -136,7 +136,7 @@ namespace WebMerge.Client
             return await response.Content.ReadAsAsync<DocumentFile>();
         }
 
-        public async Task<Document> CopyDocument(int documentId, string name)
+        public async Task<Document> CopyDocumentAsync(int documentId, string name)
         {
             if (name == null)
             {
@@ -149,16 +149,16 @@ namespace WebMerge.Client
             return await response.Content.ReadAsAsync<Document>();
         }
 
-        public async Task<ActionResponse> DeleteDocument(int documentId)
+        public async Task<ActionResponse> DeleteDocumentAsync(int documentId)
         {
             var response = await httpClient.DeleteAsync($"api/documents/{documentId}");
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsAsync<ActionResponse>();
         }
 
-        public async Task<Stream> MergeDataRouteWithSingleDownloadAsync(int documentId, string documentKey, object mergeObject, bool testMode = false)
+        public async Task<Stream> MergeDataRouteWithSingleDownloadAsync(int dataRouteId, string dataRouteKey, object mergeObject, bool testMode = false)
         {
-            var endpoint = $"route/{documentId}/{documentKey}?download=1";
+            var endpoint = $"route/{dataRouteId}/{dataRouteKey}?download=1";
 
             if (testMode)
             {
@@ -181,9 +181,9 @@ namespace WebMerge.Client
             throw new WebMergeException($"Response indicated multiple files available for download. Try using {nameof(MergeDataRouteWithMultipleDownloadAsync)} instead");
         }
 
-        public async Task<ActionResponse> MergeDataRouteAsync(int documentId, string documentKey, object mergeObject, bool testMode = false)
+        public async Task<ActionResponse> MergeDataRouteAsync(int dataRouteId, string dataRouteKey, object mergeObject, bool testMode = false)
         {
-            var endpoint = $"route/{documentId}/{documentKey}";
+            var endpoint = $"route/{dataRouteId}/{dataRouteKey}";
 
             if (testMode)
             {
@@ -196,9 +196,9 @@ namespace WebMerge.Client
             return await response.Content.ReadAsAsync<ActionResponse>();
         }
 
-        public async Task<MultipleFileRouteRequestState> MergeDataRouteWithMultipleDownloadAsync(int documentId, string documentKey, object mergeObject, bool testMode = false)
+        public async Task<MultipleFileRouteRequestState> MergeDataRouteWithMultipleDownloadAsync(int dataRouteId, string dataRouteKey, object mergeObject, bool testMode = false)
         {
-            var endpoint = $"route/{documentId}/{documentKey}?download=1";
+            var endpoint = $"route/{dataRouteId}/{dataRouteKey}?download=1";
 
             if (testMode)
             {
@@ -232,7 +232,7 @@ namespace WebMerge.Client
             return await response.Content.ReadAsAsync<List<Field>>();
         }
 
-        public async Task<ActionResponse> DeleteDataRoute(int dataRouteId)
+        public async Task<ActionResponse> DeleteDataRouteAsync(int dataRouteId)
         {
             var response = await httpClient.DeleteAsync($"api/routes/{dataRouteId}");
             response.EnsureSuccessStatusCode();
