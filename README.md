@@ -74,18 +74,16 @@ public MyClass(IWebMergeClient webMergeClient)
 ## Documents
 [API Docs](https://www.webmerge.me/developers/documents)
 
-### Merge Document
-
 #### MergeDocumentAndDownloadAsync `async Task<Stream>`
 
 *Merge the given document with the given object and download it (with download=1).*
 
 |Argument|Type|Description|
 |:---|:---|:---|
-|documentId|int|The identifier for the document template to merge data into|
-|documentKey|string|The document key|
-|mergeObject|object|The object that maps with the merge fields in the document template. e.g. a property named `FirstName` would map to a merge field `{$FirstName}`|
-|testMode|bool|Set to true to test the document merge without using your allowance (test=1)|
+|documentId|`int`|The identifier for the document template to merge data into|
+|documentKey|`string`|The document key|
+|mergeObject|`object`|The object that maps with the merge fields in the document template. e.g. a property named `FirstName` would map to a merge field `{$FirstName}`|
+|testMode|`bool`|Set to true to test the document merge without using your allowance (test=1)|
 
 **Example**  
 Assuming the document template contains `{$FirstName}` and `{$LastName}` tokens
@@ -106,10 +104,10 @@ using(var client = new WebMergeClient())
 
 |Argument|Type|Description|
 |:---|:---|:---|
-|documentId|int|The identifier for the document template to merge data into|
-|documentKey|string|The document key|
-|mergeObject|object|The object that maps with the merge fields in the document template. e.g. a property named `FirstName` would map to a merge field `{$FirstName}`|
-|testMode|bool|Set to true to test the document merge without using your allowance (test=1)|
+|documentId|`int`|The identifier for the document template to merge data into|
+|documentKey|`string`|The document key|
+|mergeObject|`object`|The object that maps with the merge fields in the document template. e.g. a property named `FirstName` would map to a merge field `{$FirstName}`|
+|testMode|`bool`|Set to true to test the document merge without using your allowance (test=1)|
 
 **Example**  
 Assuming the document template contains `{$FirstName}` and `{$LastName}` tokens
@@ -122,25 +120,18 @@ using(var client = new WebMergeClient())
     
     if(result.Success)
     {
-        // rejoyce!
-    }
-    else
-    {
-        // weep
+        // hooray!
     }
 }
 ```
 
-### Create Document  
-*(notifications not implemented)*
+#### CreateDocumentAsync `async Task<Document>`
 
-#### CreateDocumentAsync `Task<Document>`
-
-*Create a new document template*
+*Create a new document template (notifications not implemented)*
 
 |Argument|Type|Description|
 |:---|:---|:---|
-|request|DocumentRequest|An instance of either `HtmlDocumentRequest` or `FileDocumentRequest`|
+|request|`DocumentRequest`|An instance of either `HtmlDocumentRequest` or `FileDocumentRequest`|
 
 **HTML Example**
 
@@ -163,28 +154,282 @@ using(var client = new WebMergeClient())
 }
 ```
 
-### Update document
+#### UpdateDocumentAsync `async Task<Document>`
 
-### List documents
+*Update the given document using data from the given request object*
 
-### Get a document
+|Argument|Type|Description|
+|:---|:---|:---|
+|documentId|`int`|The identifier for the document to update|
+|request|`DocumentUpdateRequest`|An instance of `DocumentUpdateRequest`. Properties that are null will be ignored from the request|
 
-### Get the fields for a document
+**Example**
 
-### Get the file for a document
+```c#
+using(var client = new WebMergeClient())
+{
+    var request = new DocumentUpdateRequest();
+    request.Name = "Employment Contract";
+    
+    // update the name of a document with id = 42
+    var document = await client.UpdateDocumentAsync(42, request);
+}
+```
 
-### Copy a document
+#### GetDocumentListAsync `async Task<List<Document>>`
 
-### Delete a document
+*Get a list of your documents*
 
-## Data Route
+|Argument|Type|Description|
+|:---|:---|:---|
+|search|`string`|*(optional)* Search term to filter results by|
+|folder|`string`|*(optional)* Filter documents by folder name|
 
-### Merge a data route
+**Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var documents = await client.GetDocumentListAsync();
+    
+    // or
+    var contracts = await client.GetDocumentListAsync("Contract");
+    
+    // or proposals in Client A's folder
+    var proposals = await client.GetDocumentListAsync("Proposal", "ClientA");
+    
+    // or all documents in the Agreements folder (using named parameter)
+    var agreements = await client.GetDocumentListAsync(folder: "Agreements");
+}
+```
+
+#### GetDocumentAsync `async Task<Document>`
+
+*Retrieve a document using it's identifier*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|documentId|`int`|The document's identifier|
+
+**Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var document = await client.GetDocumentAsync(42);
+}
+```
+
+#### GetDocumentFieldsAsync `async Task<List<Field>>`
+
+*Get the fields associated with the given document*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|documentId|`int`|The document's identifier|
+
+**Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var fields = await client.GetDocumentFieldsAsync(42);
+}
+```
 
 
-## Not done yet
+#### GetFileForDocumentAsync `async Task<DocumentFile>`
 
-#### Data Routes
-* Get a data route
-* Get the fields for a data route
-* Delete a data route
+*Get the file associated with the given document. File contents are automatically decoded into a byte array*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|documentId|`int`|The document's identifier|
+
+**Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var fields = await client.GetDocumentFieldsAsync(42);
+}
+```
+#### CopyDocumentAsync `async Task<Document>`
+
+*Copy the given document to a new one*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|documentId|`int`|The document's identifier|
+|name|`string`|The name for the copied document|
+
+**Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var newDocument = await client.CopyDocumentAsync(42, "Proposal 2");
+}
+```
+
+#### DeleteDocumentAsync `async Task<ActionResponse>`
+
+*Delete the given document*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|documentId|`int`|The document's identifier|
+
+**Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var result = await client.DeleteDocumentAsync(42);
+}
+```
+
+## Data Routes
+
+[API Docs](https://www.webmerge.me/developers/routes)
+
+#### MergeDataRouteWithSingleDownloadAsync `async Task<Stream>`
+
+*Merge a data route with the given data and download as a single document. If multiple files are returned, an exception is thrown*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|dataRouteId|`int`|The route's identifier|
+|dataRouteKey|`string`|The route's key|
+|mergeObject|`object`|The object that maps with the merge fields in the document template. e.g. a property named `FirstName` would map to a merge field `{$FirstName}`|
+|testMode|`bool`|*(optional)* Set to true to test the document merge without using your allowance (test=1)|
+
+**Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var mergeFields = new {FirstName = "Jack", LastName = "Daniel"};
+    var documentStream = await client.MergeDataRouteWithSingleDownloadAsync(42, "foobar", mergeFields);
+}
+```
+
+#### MergeDataRouteAsync `async Task<ActionResponse>`
+
+*Merge a data route with the given data*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|dataRouteId|`int`|The route's identifier|
+|dataRouteKey|`string`|The route's key|
+|mergeObject|`object`|The object that maps with the merge fields in the document template. e.g. a property named `FirstName` would map to a merge field `{$FirstName}`|
+|testMode|`bool`|*(optional)* Set to true to test the document merge without using your allowance (test=1)|
+
+**Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var mergeFields = new {FirstName = "Jack", LastName = "Daniel"};
+    var result = await client.MergeDataRouteAsync(42, "foobar", mergeFields);
+    
+    if(result.Success)
+    {
+        // yay!
+    }
+}
+```
+
+#### MergeDataRouteWithMultipleDownloadAsync `async Task<MultipleFileRouteRequestState>`
+
+*Merge a data route with the given merge fields and download 2 or more files. The files will be available as byte arrays*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|dataRouteId|`int`|The route's identifier|
+|dataRouteKey|`string`|The route's key|
+|mergeObject|`object`|The object that maps with the merge fields in the document template. e.g. a property named `FirstName` would map to a merge field `{$FirstName}`|
+|testMode|`bool`|*(optional)* Set to true to test the document merge without using your allowance (test=1)|
+
+**Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var mergeFields = new {FirstName = "Jack", LastName = "Daniel"};
+    var result = await client.MergeDataRouteWithMultipleDownloadAsync(42, "foobar", mergeFields);
+    
+    foreach(var file in result.Files)
+    {
+        System.IO.File.WriteAllBytes($"C:\\Documents\\{file.Name}.pdf", file.FileContents);
+    }
+}
+```
+
+#### GetDataRouteListAsync `async Task<List<DataRoute>>`
+
+*Get a list of your data routes*
+
+**Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var routes = await client.GetDataRouteListAsync();
+}
+```
+
+#### GetDataRouteAsync `async Task<DataRoute` 
+
+*Get a data route with the given identitfier*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|dataRouteId|`int`|The route's identifier|
+
+**Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var route = await client.GetDataRouteAsync(123);
+}
+```
+
+#### GetDataRouteFieldsAsync `async Task<List<Field>>`
+
+*Get the fields associated with the given data route*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|dataRouteId|`int`|The route's identifier|
+
+**Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var fields = await client.GetDataRouteFieldsAsync(123);
+}
+```
+
+#### DeleteDataRouteAsync `async Task<ActionResponse>`
+
+*Delete the data route with the given identifier*
+
+|Argument|Type|Description|
+|:---|:---|:---|
+|dataRouteId|`int`|The route's identifier|
+
+**Example**
+
+```c#
+using(var client = new WebMergeClient())
+{
+    var result = await client.DeleteDataRouteAsync(123);
+}
+```
+
+### TODO
+
+* Documentation for building from source
