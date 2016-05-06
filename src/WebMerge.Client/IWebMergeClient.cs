@@ -26,9 +26,9 @@ namespace WebMerge.Client
 
         #region Data Routes
 
-        Task<Stream> MergeDataRouteWithSingleDownloadAsync(int documentId, string documentKey, object mergeObject, bool testMode = false);
-        Task<ActionResponse> MergeDataRouteAsync(int documentId, string documentKey, object mergeObject, bool testMode = false);
-        Task<MultipleFileRouteRequestState> MergeDataRouteWithMultipleDownloadAsync(int documentId, string documentKey, object mergeObject, bool testMode = false);
+        Task<Stream> MergeDataRouteWithSingleDownloadAsync(int dataRouteId, string dataRouteKey, object mergeObject, bool testMode = false);
+        Task<ActionResponse> MergeDataRouteAsync(int dataRouteId, string dataRouteKey, object mergeObject, bool testMode = false);
+        Task<MultipleFileRouteRequestState> MergeDataRouteWithMultipleDownloadAsync(int dataRouteId, string dataRouteKey, object mergeObject, bool testMode = false);
 
         Task<List<DataRoute>> GetDataRouteListAsync();
         Task<DataRoute> GetDataRouteAsync(int dataRouteId);
