@@ -98,7 +98,7 @@ namespace WebMerge.Tests
 
             messageHandler.AddResponse(new Uri("https://test.io/api/documents/42/copy"), exampleResponse);
 
-            var result = await client.CopyDocument(42, "1040 EZier - CA");
+            var result = await client.CopyDocumentAsync(42, "1040 EZier - CA");
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Name, Is.EqualTo("1040 EZier - CA"));
@@ -204,7 +204,7 @@ namespace WebMerge.Tests
 
             messageHandler.AddResponse(new Uri("https://test.io/api/routes/123"), exampleResponse);
 
-            var result = await client.DeleteDataRoute(123);
+            var result = await client.DeleteDataRouteAsync(123);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Success, Is.EqualTo(true));
@@ -220,7 +220,7 @@ namespace WebMerge.Tests
 
             messageHandler.AddResponse(new Uri("https://test.io/api/documents/42"), exampleResponse);
 
-            var result = await client.DeleteDocument(42);
+            var result = await client.DeleteDocumentAsync(42);
 
             Assert.That(result.Success, Is.True);
         }
