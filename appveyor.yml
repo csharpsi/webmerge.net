@@ -17,8 +17,9 @@ build:
   publish_nuget_symbols: true
   verbosity: minimal
 deploy:
-- provider: NuGet
-  api_key:
-    secure: mw4zJA4CQtJP6PWGLMr8CtHkeznpB7HakdJ6O/jEwYwELW7kt7M6dEETRYFb7K8r
+- provider: Environment
+  name: Release
   on:
     branch: master
+    appveyor_repo_tag: true
+  skip_tags: true
