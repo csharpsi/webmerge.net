@@ -7,11 +7,11 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 
 [assembly: AssemblyTitle("WebMerge.Client")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("C# Library for the WebMerge API. See https://www.webmerge.me/ for more information")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("csharpsi")]
 [assembly: AssemblyProduct("WebMerge.Client")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCopyright("Copyright © csharpsi 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: InternalsVisibleTo("WebMerge.Tests")]
