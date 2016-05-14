@@ -10,7 +10,7 @@ For more information on the WebMerge API, read through their [documentation](htt
 ## Installation 
 
 ```
-Install-Package WebMerge.Net
+Install-Package WebMerge.Client
 ```
 
 ## Authentication
