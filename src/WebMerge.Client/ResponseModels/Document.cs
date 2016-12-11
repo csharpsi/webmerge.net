@@ -30,11 +30,11 @@ namespace WebMerge.Client.ResponseModels
 
         [JsonProperty("size_width")]
         [JsonConverter(typeof (WriteToStringConverter))]
-        public double? SizeWidth { get; set; }
+        public string SizeWidth { get; set; }
 
         [JsonProperty("size_height")]
         [JsonConverter(typeof (WriteToStringConverter))]
-        public double? SizeHeight { get; set; }
+        public string SizeHeight { get; set; }
 
         [JsonProperty("active")]
         [JsonConverter(typeof (BitBooleanConverter))]
