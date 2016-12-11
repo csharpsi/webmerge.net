@@ -373,8 +373,8 @@ namespace WebMerge.Tests
             Assert.That(doc1.DocumentType, Is.EqualTo(DocumentType.Pdf));
             Assert.That(doc1.Name, Is.EqualTo("1040 EZ"));
             Assert.That(doc1.OutputType, Is.EqualTo(DocumentOutputType.Pdf));
-            Assert.That(doc1.SizeWidth, Is.EqualTo(8.5d));
-            Assert.That(doc1.SizeHeight, Is.EqualTo(11d));
+            Assert.That(doc1.SizeWidth, Is.EqualTo("8.5"));
+            Assert.That(doc1.SizeHeight, Is.EqualTo("11"));
             Assert.That(doc1.IsActive, Is.EqualTo(true));
             Assert.That(doc1.Url, Is.EqualTo("https://www.webmerge.me/merge/2436346/firm3"));
 
@@ -383,10 +383,49 @@ namespace WebMerge.Tests
             Assert.That(doc2.DocumentType, Is.EqualTo(DocumentType.Pdf));
             Assert.That(doc2.Name, Is.EqualTo("1040 EZ - COPY"));
             Assert.That(doc2.OutputType, Is.EqualTo(DocumentOutputType.Pdf));
-            Assert.That(doc2.SizeWidth, Is.EqualTo(8.5d));
-            Assert.That(doc2.SizeHeight, Is.EqualTo(16d));
+            Assert.That(doc2.SizeWidth, Is.EqualTo("8.5"));
+            Assert.That(doc2.SizeHeight, Is.EqualTo("16"));
             Assert.That(doc2.IsActive, Is.EqualTo(false));
             Assert.That(doc2.Url, Is.EqualTo("https://www.webmerge.me/merge/436347/7icxf"));
+        }
+
+        [Test]
+        public async Task CorrectlyDeserialiseADocument()
+        {
+            const string exampleResponse = @"
+            [
+                {
+                    ""id"":""436346"",
+                    ""key"":""firm3"",
+                    ""type"":""pdf"",
+                    ""name"":""1040 EZ"",
+                    ""output"":""pdf"",
+                    ""size"":"""",
+                    ""size_width"":""8.5in"",
+                    ""size_height"":""11in"",
+                    ""active"":""1"",
+    	            ""url"":""https://www.webmerge.me/merge/2436346/firm3""
+                }
+            ]";
+
+            messageHandler.AddResponse(new Uri("https://test.io/api/documents"), exampleResponse);
+
+            var documents = await client.GetDocumentListAsync();
+
+            Assert.That(documents, Has.Count.EqualTo(1));
+
+            var doc1 = documents[0];
+
+            Assert.That(doc1.Id, Is.EqualTo(436346));
+            Assert.That(doc1.Key, Is.EqualTo("firm3"));
+            Assert.That(doc1.DocumentType, Is.EqualTo(DocumentType.Pdf));
+            Assert.That(doc1.Name, Is.EqualTo("1040 EZ"));
+            Assert.That(doc1.OutputType, Is.EqualTo(DocumentOutputType.Pdf));
+            Assert.That(doc1.SizeWidth, Is.EqualTo("8.5in"));
+            Assert.That(doc1.SizeHeight, Is.EqualTo("11in"));
+            Assert.That(doc1.IsActive, Is.EqualTo(true));
+            Assert.That(doc1.Url, Is.EqualTo("https://www.webmerge.me/merge/2436346/firm3"));
+
         }
 
         [Test]
@@ -439,8 +478,8 @@ namespace WebMerge.Tests
             Assert.That(document.DocumentType, Is.EqualTo(DocumentType.Pdf));
             Assert.That(document.Name, Is.EqualTo("1040 EZ - COPY"));
             Assert.That(document.OutputType, Is.EqualTo(DocumentOutputType.Pdf));
-            Assert.That(document.SizeWidth, Is.EqualTo(8.5d));
-            Assert.That(document.SizeHeight, Is.EqualTo(16d));
+            Assert.That(document.SizeWidth, Is.EqualTo("8.5"));
+            Assert.That(document.SizeHeight, Is.EqualTo("16"));
             Assert.That(document.IsActive, Is.EqualTo(false));
             Assert.That(document.Url, Is.EqualTo("https://www.webmerge.me/merge/436347/7icxf"));
             Assert.That(document.Html, Is.EqualTo("<p>This is some HTML with a {$Token}</p>"));
